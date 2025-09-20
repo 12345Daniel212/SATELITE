@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Mission Control — Orbital Parameters</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #0a0f1c;
+      /* Navy profundo */
+      --panel: #0f1626;
+      /* Panel / tarjetas */
+      --line: #1f2a3f;
+      /* Líneas/bordes */
+      --text: #e6edf7;
+      /* Texto principal */
+      --muted: #aab9d2;
+      /* Texto secundario */
+      --accent-red: #e03a3e;
+      /* Rojo NASA */
+      --accent-blue: #0b3d91;
+      /* Azul NASA */
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font: 15.5px/1.55 ui-sans-serif, system-ui, Segoe UI, Roboto, Arial;
+      color: var(--text);
+      background:
+        radial-gradient(1600px 800px at -10% -20%, #0b1430b0, transparent 55%),
+        radial-gradient(1400px 800px at 110% 0%, #071022b0, transparent 55%),
+        var(--bg);
+      /* starfield sutil */
+      background-image:
+        radial-gradient(1px 1px at 20% 30%, #fff3, transparent 55%),
+        radial-gradient(1px 1px at 70% 20%, #fff2, transparent 55%),
+        radial-gradient(1px 1px at 40% 80%, #fff2, transparent 55%),
+        radial-gradient(1px 1px at 85% 65%, #fff2, transparent 55%);
+      background-blend-mode: screen, normal;
+    }
+
+    /* Top bar tipo misión */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: linear-gradient(180deg, rgba(10, 15, 28, .95), rgba(10, 15, 28, .6));
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(6px);
+    }
+
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 20px
+    }
+
+    .nav {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    .logo {
+      width: 28px;
+      height: 28px
+    }
+
+    .badge {
+      font-size: 12px;
+      color: var(--muted);
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #0b1223d0;
+    }
+
+    /* Encabezado */
+    header {
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(15, 22, 38, .5), transparent 60%);
+      padding: 32px 0 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-weight: 900;
+      letter-spacing: .02em;
+      font-size: clamp(24px, 4.5vw, 38px);
+    }
+
+    .lead {
+      margin: 0;
+      color: var(--muted);
+      max-width: 78ch
+    }
+
+    /* Layout principal */
+    main {
+      padding: 22px 0 50px
+    }
+
+    .grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(12, 1fr)
+    }
+
+    .card {
+      grid-column: span 6;
+      background: linear-gradient(180deg, #0f1626, #0c1423);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, .35), inset 0 1px 0 rgba(255, 255, 255, .06);
+    }
+
+    @media(max-width:900px) {
+      .card {
+        grid-column: span 12
+      }
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase
+    }
+
+    fieldset {
+      border: 0;
+      padding: 0;
+      margin: 0
+    }
+
+    label {
+      display: block;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 8px 0 6px
+    }
+
+    input {
+      width: 100%;
+      padding: 10px 12px;
+      color: var(--text);
+      background: #0b1324;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      outline: none;
+      transition: border .15s, box-shadow .15s;
+    }
+
+    input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(11, 61, 145, .25)
+    }
+
+    .row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr auto;
+      align-items: end
+    }
+
+    .btn {
+      appearance: none;
+      border: 1px solid var(--accent-blue);
+      color: #eaf2ff;
+      background: linear-gradient(180deg, #183a7a, #112a58);
+      padding: 10px 14px;
+      border-radius: 10px;
+      font-weight: 800;
+      letter-spacing: .03em;
+      cursor: pointer;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .1);
+    }
+
+    .btn:hover {
+      filter: brightness(1.03)
+    }
+
+    .hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 6px
+    }
+
+    /* Panel de salida tipo consola */
+    .panel {
+      grid-column: span 12;
+      background: #0b1324;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .panel h3 {
+      margin: 0 0 10px;
+      font-size: 14px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      color: #cbd7ee
+    }
+
+    .console {
+      background: #070d1a;
+      border: 1px solid #18243d;
+      border-radius: 8px;
+      padding: 10px;
+    }
+
+    iframe {
+      width: 100%;
+      height: 240px;
+      border: 0;
+      border-radius: 6px;
+      background: transparent;
+    }
+
+    /* Línea de estado inferior */
+    footer {
+      margin-top: 20px;
+      padding: 14px 0 28px;
+      color: var(--muted);
+      font-size: 12.5px;
+      border-top: 1px solid var(--line);
+    }
+
+    /* Indicadores de secciones (rojo/azul) */
+    .rule {
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-red), var(--accent-blue));
+      border-radius: 2px;
+      margin: 4px 0 14px;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Topbar -->
+  <div class="topbar">
+    <div class="container nav">
+      <div class="brand">
+        <!-- Marca minimal (parábola antena) -->
+        <svg class="logo" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M12 21v-8" stroke-width="1.6" stroke-linecap="round" />
+          <circle cx="12" cy="9" r="2" stroke-width="1.6" />
+          <path d="M5 9a7 7 0 0 1 14 0" stroke-width="1.6" stroke-linecap="round" />
+          <path d="M8 9a4 4 0 0 1 8 0" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        Mission Control
+      </div>
+      <span class="badge">Status: Online • <span id="year"></span></span>
+    </div>
+  </div>
+
+  <!-- Encabezado -->
+  <header>
+    <div class="container">
+      <h1>Orbital Parameters — Operations Console</h1>
+      <p class="lead">Interfaz de cálculo para el sistema del satélite: estado de órbita, velocidad, distancia, tiempo
+        estimado y gravedad efectiva por altitud. Los resultados se renderizan abajo sin abandonar el panel.</p>
+    </div>
+  </header>
+
+  <!-- Panel principal -->
+  <main>
+    <div class="container">
+      <div class="grid">
+
+        <!-- Estado orbital -->
+        <section class="card">
+          <h2>Estado de órbita</h2>
+          <div class="rule"></div>
+          <form action="/estado" method="get" target="out">
+            <fieldset>
+              <label for="distancia_km">Distancia al centro de la Tierra (km)</label>
+              <div class="row">
+                <input id="distancia_km" name="distancia_km" type="number" step="any" placeholder="p.ej., 2000"
+                  required>
+                <button class="btn" type="submit">Evaluar</button>
+              </div>
+              <div class="hint">Devuelve: Low / Medium / High Orbit (según umbrales internos).</div>
+            </fieldset>
+          </form>
+        </section>
+
+        <!-- Velocidad -->
+        <section class="card">
+          <h2>Velocidad</h2>
+          <div class="rule"></div>
+          <form action="/velocidad" method="get" target="out">
+            <fieldset>
+              <label for="d_km_v">Distancia (km)</label>
+              <input id="d_km_v" name="distancia_km" type="number" step="any" placeholder="p.ej., 400" required>
+              <label for="t_h_v">Tiempo (h)</label>
+              <div class="row">
+                <input id="t_h_v" name="tiempo_h" type="number" step="any" placeholder="p.ej., 0.5" required>
+                <button class="btn" type="submit">Calcular km/h</button>
+              </div>
+              <div class="hint">v = d / t</div>
+            </fieldset>
+          </form>
+        </section>
+
+        <!-- Distancia -->
+        <section class="card">
+          <h2>Distancia</h2>
+          <div class="rule"></div>
+          <form action="/distancia" method="get" target="out">
+            <fieldset>
+              <label for="v_kmh_d">Velocidad (km/h)</label>
+              <input id="v_kmh_d" name="velocidad_km_h" type="number" step="any" placeholder="p.ej., 28000" required>
+              <label for="t_h_d">Tiempo (h)</label>
+              <div class="row">
+                <input id="t_h_d" name="tiempo_h" type="number" step="any" placeholder="p.ej., 0.5" required>
+                <button class="btn" type="submit">Calcular km</button>
+              </div>
+              <div class="hint">d = v · t</div>
+            </fieldset>
+          </form>
+        </section>
+
+        <!-- Tiempo -->
+        <section class="card">
+          <h2>Tiempo</h2>
+          <div class="rule"></div>
+          <form action="/tiempo" method="get" target="out">
+            <fieldset>
+              <label for="d_km_t">Distancia (km)</label>
+              <input id="d_km_t" name="distancia_km" type="number" step="any" placeholder="p.ej., 400" required>
+              <label for="v_kmh_t">Velocidad (km/h)</label>
+              <div class="row">
+                <input id="v_kmh_t" name="velocidad_km_h" type="number" step="any" placeholder="p.ej., 28000" required>
+                <button class="btn" type="submit">Calcular h</button>
+              </div>
+              <div class="hint">t = d / v</div>
+            </fieldset>
+          </form>
+        </section>
+
+        <!-- Gravedad -->
+        <section class="card">
+          <h2>Gravedad efectiva</h2>
+          <div class="rule"></div>
+          <form action="/gravedad" method="get" target="out">
+            <fieldset>
+              <label for="alt_km">Altitud sobre la superficie (km)</label>
+              <div class="row">
+                <input id="alt_km" name="altitud_km" type="number" step="any" placeholder="p.ej., 400" required>
+                <button class="btn" type="submit">Calcular m/s²</button>
+              </div>
+              <div class="hint">g = G·M / r², con r = (Rₜ + altitud) × 1000.</div>
+            </fieldset>
+          </form>
+        </section>
+
+        <!-- Salida -->
+        <section class="panel">
+          <h3>OUTPUT — TELEMETRY CHANNEL</h3>
+          <div class="console">
+            <iframe name="out" title="Resultados"></iframe>
+          </div>
+          <div class="hint">Los datos provienen directamente de tu backend Flask.</div>
+        </section>
+
+      </div>
+
+      <footer>
+        © <span id="y"></span> Mission Control — Flight Dynamics & Ground Systems
+      </footer>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+
+</html>
